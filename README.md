@@ -1,73 +1,129 @@
-# React + TypeScript + Vite
+# Blostem
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Blostem is a React + TypeScript financial planning dashboard with a lightweight Express backend and SQLite persistence.
 
-Currently, two official plugins are available:
+The app helps users sign up, complete onboarding with income, expenses, goals, and tax preferences, then generates a personalized cash flow, tax comparison, and investment plan. Live market data and risk-aware guidance are surfaced through the backend.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech stack
 
-## React Compiler
+- Frontend: React 19, TypeScript, Vite
+- UI: Recharts, Lucide icons
+- Backend: Node.js, Express, SQLite
+- Authentication: JWT
+- Server-side market data caching
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Email/password sign up and login
+- Step-by-step onboarding for profile, income, expenses, goals, tax settings, and risk profile
+- Personalized dashboard with:
+  - monthly take-home and investable surplus
+  - tax regime comparison (old vs new)
+  - cash flow plan and allocation insights
+  - goal progress and peer benchmarking
+- Market data endpoints for:
+  - Forex
+  - Crypto
+  - Indian indices (Sensex / NIFTY)
+  - Mutual funds
+- Quant engine that generates and persists financial plans
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Repository structure
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- `src/` — frontend source code
+  - `pages/` — app screens like `Login`, `Onboarding`, `Dashboard`, `MoneyStory`
+  - `context/` — app state and auth provider
+  - `services/` — API client
+  - `utils/` — financial helpers
+- `backend/` — Express backend
+  - `routes/` — auth, data, market, and quant routes
+  - `services/` — business logic and cache
+  - `db.js` — SQLite initialization and schema
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Install dependencies
+
+From the root:
+
+```bash
+npm install
+npm install --prefix backend
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Configure environment variables (optional)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create `backend/.env` if you want custom values:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+PORT=3000
+JWT_SECRET=your_secret_here
 ```
+
+If no `.env` is present, defaults are used:
+- `PORT=3000`
+- `JWT_SECRET=super-secret-key-for-blostem`
+
+### 3. Run development servers
+
+From the project root:
+
+```bash
+npm run dev
+```
+
+This starts both the frontend and backend together. The frontend proxies API calls to the backend via `/backend-api`.
+
+### 4. Build for production
+
+```bash
+npm run build
+```
+
+### 5. Preview production build
+
+```bash
+npm run preview
+```
+
+### 6. Run backend separately
+
+```bash
+npm run server
+```
+
+Or from the backend folder:
+
+```bash
+npm run dev
+```
+
+## Backend API overview
+
+The frontend communicates with the backend through proxied routes under `/backend-api`.
+
+Core endpoints:
+
+- `POST /backend-api/auth/signup` — create a user account
+- `POST /backend-api/auth/login` — authenticate and obtain JWT
+- `GET /backend-api/data` — fetch consolidated user profile and planning data
+- `PUT /backend-api/data/profile` — update profile fields
+- `PUT /backend-api/data/income` — update income settings
+- `PUT /backend-api/data/tax-profile` — update tax / deduction settings
+- `PUT /backend-api/data/risk-profile` — update investment risk profile
+- `PUT /backend-api/data/onboarding` — mark onboarding complete
+- `POST /backend-api/data/expenses` — add expense
+- `DELETE /backend-api/data/expenses/:id` — remove expense
+- `POST /backend-api/quant/plan` — generate a financial plan
+- `GET /backend-api/quant/plan` — retrieve latest saved plan
+- `POST /backend-api/markets/mutual-funds` — fetch cached mutual fund data
+
+## Notes
+
+- The SQLite database file is created automatically at `backend/database.sqlite`.
+- The frontend expects the backend to run at `http://localhost:3000`; Vite proxies requests from `/backend-api` to `/api`.
+- Authentication state is stored in `localStorage` under `blostem_token`.
+
+## License
+
+This repository does not include a license file. Add one if you want to publish or share the project publicly.
