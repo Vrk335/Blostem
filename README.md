@@ -4,6 +4,8 @@ Blostem is a React + TypeScript financial planning dashboard with a lightweight 
 
 The app helps users sign up, complete onboarding with income, expenses, goals, and tax preferences, then generates a personalized cash flow, tax comparison, and investment plan. Live market data and risk-aware guidance are surfaced through the backend.
 
+Deployed live at : https://blostemhackathon.vercel.app/
+
 ## Tech stack
 
 - Frontend: React 19, TypeScript, Vite
